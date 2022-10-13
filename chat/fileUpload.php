@@ -5,22 +5,25 @@
     
 	if (isset($_FILES['file']['name'])) {
 		$filename = $_FILES['file']['name'];
-        $location = "img/users/" . $filename;
+        	$location = "img/users/" . $filename;
 
-     	$file_extension = pathinfo($location, PATHINFO_EXTENSION);
-		$file_extension = strtolower($file_extension);
+     		$file_extension = strtolower(pathinfo($location, PATHINFO_EXTENSION));
+		$file_size = filesize($filename);
 		$valid_ext = array("jpg","png","jpeg");
 		$temp = explode(".", $_FILES["file"]["name"]);
 		$newfilename = $_GET["nome"] . '.' . end($temp);
 		
-     	$response = false;
-     	if (in_array($file_extension, $valid_ext)) {
-        	if (move_uploaded_file($_FILES['file']['tmp_name'], "img/users/" . $newfilename)) {
-           		$response = true;
-        	}
-     	}
-
-		echo json_encode($response);
-     	exit;
+     		if (!in_array($file_extension, $valid_ext) || $filesize > 3145728) {
+			echo json_encode(false);	
+		}
+		
+		if(!move_uploaded_file($_FILES['file']['tmp_name'], "img/users/" . $newfilename)){
+			echo json_encode(false);
+		}
+		
+		echo json_encode(true);
 	}
+
+	echo json_encode(false);
+	exit;
 ?>
